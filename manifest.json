@@ -1,0 +1,13 @@
+﻿{
+   "Name": "ChefsCloset",
+   "Author": "Duder",
+   "Version": {
+      "MajorVersion": 1,
+      "MinorVersion": 0,
+      "PatchVersion": 0,
+      "Build": "1"
+   },
+   "Description": "Extend the items available during cooking by chaining chests to your fridge.",
+   "UniqueID": "Duder.ChefsCloset",
+   "EntryDll": "ChefsCloset.dll"
+}

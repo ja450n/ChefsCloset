@@ -1,0 +1,5 @@
+C:\Users\Patrick\Documents\Projects\ChefsCloset\obj\Debug\ChefsCloset.csprojResolveAssemblyReference.cache
+C:\Users\Patrick\Documents\Projects\ChefsCloset\bin\Debug\ChefsCloset.dll
+C:\Users\Patrick\Documents\Projects\ChefsCloset\bin\Debug\ChefsCloset.pdb
+C:\Users\Patrick\Documents\Projects\ChefsCloset\obj\Debug\ChefsCloset.dll
+C:\Users\Patrick\Documents\Projects\ChefsCloset\obj\Debug\ChefsCloset.pdb
