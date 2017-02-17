@@ -7,7 +7,7 @@
       "PatchVersion": 0,
       "Build": "1"
    },
-   "Description": "Extend the items available during cooking by chaining chests to your fridge.",
+   "Description": "Make more items available during cooking by placing chests in the kitchen.",
    "UniqueID": "Duder.ChefsCloset",
    "EntryDll": "ChefsCloset.dll"
 }

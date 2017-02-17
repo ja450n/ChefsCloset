@@ -4,11 +4,11 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument=".gitignore">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ModEntry.cs">
     <Files>
-      <File FileName="ModEntry.cs" Line="29" Column="43" />
-      <File FileName="manifest.json" Line="13" Column="2" />
-      <File FileName=".gitignore" Line="34" Column="1" />
+      <File FileName="ModEntry.cs" Line="53" Column="67" />
+      <File FileName="manifest.json" Line="10" Column="94" />
+      <File FileName=".gitignore" Line="28" Column="9" />
     </Files>
   </MonoDevelop.Ide.Workbench>
 </Properties>
