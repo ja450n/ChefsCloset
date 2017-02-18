@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -25,9 +26,11 @@ namespace ChefsCloset
 
 		private void ResolveCookedItems(object seneder, EventArgsClickableMenuClosed e) {
 			if (farmHouse != null && e.PriorMenu is CraftingPage) {
+				// remove all used items from fridge and reset fridge inventory
 				_fridgeItems.RemoveAll(x => x.Stack == 0);
 				farmHouse.fridge.items = _fridgeItems;
 
+				// remove all used items from chests
 				foreach (var obj in farmHouse.objects)
 				{
 					if (obj.Value.Name == "Chest" && obj.Key.X <= kitchenRange)
@@ -46,17 +49,36 @@ namespace ChefsCloset
 			if (farmHouse != null && farmHouse.upgradeLevel >= 1 && e.NewMenu is CraftingPage)
 			{
 				_fridgeItems = farmHouse.fridge.items;
-				var cookingItems = new List<Item>(_fridgeItems);
+				var cookingItems = new List<Item>();
+				var chestKeys = new List<Vector2>();
 
-				foreach (var obj in farmHouse.objects)
-				{	
-					if (obj.Value.Name == "Chest" && obj.Key.X <= kitchenRange) {
-						var chest = (Chest)obj.Value;
-						_chestItems.Add(chest.items);
-						cookingItems.AddRange(chest.items);
+				// collect chest keys from kitchen tiles
+				foreach (var obj in farmHouse.objects) {
+					if (obj.Value.Name == "Chest" && obj.Key.X <= kitchenRange)
+					{
+						chestKeys.Add(obj.Key);
 					}
 				}
 
+				// order keys to ensure chest items are consumed in the correct order: left-right/top-bottom
+				chestKeys.OrderBy(x => x.Y).ToList().OrderBy(x => x.X).ToList();
+
+				// consolidate cooking items
+				foreach (var chestKey in chestKeys)
+				{
+					Object chest;
+					farmHouse.objects.TryGetValue(chestKey, out chest);
+
+					if (chest != null) {
+						((Chest)chest).items.ForEach(x => Monitor.Log(x.getDescription()));
+
+						_chestItems.Add(((Chest)chest).items);
+						cookingItems.AddRange(((Chest)chest).items);
+					}
+				}
+				cookingItems.AddRange(_fridgeItems);
+
+				// apply cooking items
 				farmHouse.fridge.items = cookingItems;
 			}
 		}
