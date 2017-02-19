@@ -61,8 +61,9 @@ namespace ChefsCloset
 				}
 
 				// order keys to ensure chest items are consumed in the correct order: left-right/top-bottom
-				chestKeys.OrderBy(x => x.Y).ToList().OrderBy(x => x.X).ToList();
-
+				chestKeys = chestKeys.OrderBy(x => x.X).ToList().OrderBy(x => x.Y).ToList();
+				chestKeys.Reverse();
+				         
 				// consolidate cooking items
 				foreach (var chestKey in chestKeys)
 				{
@@ -70,8 +71,7 @@ namespace ChefsCloset
 					farmHouse.objects.TryGetValue(chestKey, out chest);
 
 					if (chest != null) {
-						((Chest)chest).items.ForEach(x => Monitor.Log(x.getDescription()));
-
+						Monitor.Log($"Adding {((Chest)chest).items.Count} items from chest at {chestKey.X},{chestKey.Y}");
 						_chestItems.Add(((Chest)chest).items);
 						cookingItems.AddRange(((Chest)chest).items);
 					}
