@@ -20,12 +20,12 @@ namespace ChefsCloset
 		}
 
 		private FarmHouse farmHouse;
+		private Vector2 kitchenRange = new Vector2(6, 0);
 		private List<Item> _fridgeItems;
 		private List<List<Item>> _chestItems = new List<List<Item>>();
-		private int kitchenRange;
 
 		private void ResolveCookedItems(object seneder, EventArgsClickableMenuClosed e) {
-			if (farmHouse != null && e.PriorMenu is CraftingPage) {
+			if (farmHouse != null && e.PriorMenu is CraftingPage && _chestItems.Count() > 0) {
 				// remove all used items from fridge and reset fridge inventory
 				_fridgeItems.RemoveAll(x => x.Stack == 0);
 				farmHouse.fridge.items = _fridgeItems;
@@ -33,13 +33,15 @@ namespace ChefsCloset
 				// remove all used items from chests
 				foreach (var obj in farmHouse.objects)
 				{
-					if (obj.Value.Name == "Chest" && obj.Key.X <= kitchenRange)
+					if (obj.Value.Name == "Chest" && obj.Key.X <= kitchenRange.X && obj.Key.Y >= kitchenRange.Y)
 					{
 						var chest = (Chest)obj.Value;
 						chest.items = _chestItems.First(x => x == chest.items);
 						chest.items.RemoveAll(x => x.Stack == 0);
 					}
 				}
+
+				_chestItems.Clear();
 			}
 		}
 
@@ -54,9 +56,13 @@ namespace ChefsCloset
 
 				// collect chest keys from kitchen tiles
 				foreach (var obj in farmHouse.objects) {
-					if (obj.Value.Name == "Chest" && obj.Key.X <= kitchenRange)
+					if (obj.Value.Name == "Chest" && obj.Key.X <= kitchenRange.X && obj.Key.Y >= kitchenRange.Y)
 					{
 						chestKeys.Add(obj.Key);
+					}
+					else if (obj.Value.Name == "Chest")
+					{
+						Monitor.Log($"Chest found out of range at {obj.Key.X},{obj.Key.Y}");
 					}
 				}
 
@@ -89,9 +95,19 @@ namespace ChefsCloset
 			if (e.NewLocation is FarmHouse)
 			{
 				farmHouse = (FarmHouse)e.NewLocation;
-				kitchenRange = farmHouse.upgradeLevel == 2 ? 9 : 6;
+				if (farmHouse.upgradeLevel == 2)
+				{
+					Monitor.Log("setting kitchen range for upgradelevel 2");
+					kitchenRange.X = 9;
+					kitchenRange.Y = 14;
+				}
 			}
 			else {
+				// HACK: uprades farmhouse to level 2 for testing
+				//if (farmHouse.upgradeLevel == 1) {
+				//	farmHouse.setMapForUpgradeLevel(2);
+				//	farmHouse.upgradeLevel = 2;
+				//}
 				farmHouse = null;
 			}
 		}
