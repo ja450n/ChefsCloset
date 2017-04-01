@@ -25,7 +25,7 @@ namespace ChefsCloset
 		private List<List<Item>> _chestItems = new List<List<Item>>();
 
 		private void ResolveCookedItems(object seneder, EventArgsClickableMenuClosed e) {
-			if (farmHouse != null && e.PriorMenu is CraftingPage && _chestItems.Count() > 0) {
+			if (farmHouse != null && e.PriorMenu is CraftingPage && _chestItems.Any()) {
 				// remove all used items from fridge and reset fridge inventory
 				_fridgeItems.RemoveAll(x => x.Stack == 0);
 				farmHouse.fridge.items = _fridgeItems;
@@ -33,12 +33,12 @@ namespace ChefsCloset
 				// remove all used items from chests
 				foreach (var obj in farmHouse.objects)
 				{
-					if (obj.Value.Name == "Chest" && obj.Key.X <= kitchenRange.X && obj.Key.Y >= kitchenRange.Y)
-					{
-						var chest = (Chest)obj.Value;
-						chest.items = _chestItems.First(x => x == chest.items);
-						chest.items.RemoveAll(x => x.Stack == 0);
-					}
+					Chest chest = obj.Value as Chest;
+					if (chest == null || chest == farmHouse.fridge || obj.Key.X > kitchenRange.X || obj.Key.Y < kitchenRange.Y)
+						continue;
+
+					chest.items = _chestItems.First(x => x == chest.items);
+					chest.items.RemoveAll(x => x.Stack == 0);
 				}
 
 				_chestItems.Clear();
@@ -56,20 +56,22 @@ namespace ChefsCloset
 
 				// collect chest keys from kitchen tiles
 				foreach (var obj in farmHouse.objects) {
-					if (obj.Value.Name == "Chest" && obj.Key.X <= kitchenRange.X && obj.Key.Y >= kitchenRange.Y)
-					{
-						chestKeys.Add(obj.Key);
-					}
-					else if (obj.Value.Name == "Chest")
+					Chest chest = obj.Value as Chest;
+					if (chest == null || chest == farmHouse.fridge)
+						continue;
+					if (obj.Key.X > kitchenRange.X || obj.Key.Y < kitchenRange.Y)
 					{
 						Monitor.Log($"Chest found out of range at {obj.Key.X},{obj.Key.Y}");
+						continue;
 					}
+
+					chestKeys.Add(obj.Key);
 				}
 
 				// order keys to ensure chest items are consumed in the correct order: left-right/top-bottom
 				chestKeys = chestKeys.OrderBy(x => x.X).ToList().OrderBy(x => x.Y).ToList();
 				chestKeys.Reverse();
-				         
+
 				// consolidate cooking items
 				foreach (var chestKey in chestKeys)
 				{
