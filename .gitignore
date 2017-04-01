@@ -1,40 +1,25 @@
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# user-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
-# Precompiled Headers
-*.gch
-*.pch
+# build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+# Visual Studio cache/options
+.vs/
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-
-/bin
-/obj
-/packages
-/ChefsCloset
-*.sln
-*.userprefs
-*.zip
+# NuGet packages
+*.nupkg
+**/packages/*
+*.nuget.props
+*.nuget.targets
