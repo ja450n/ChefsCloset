@@ -97,19 +97,13 @@ namespace ChefsCloset
 			if (e.NewLocation is FarmHouse)
 			{
 				farmHouse = (FarmHouse)e.NewLocation;
-				if (farmHouse.upgradeLevel == 2)
+				if (farmHouse.upgradeLevel >= 2)
 				{
-					Monitor.Log("setting kitchen range for upgradelevel 2");
 					kitchenRange.X = 9;
 					kitchenRange.Y = 14;
 				}
 			}
 			else {
-				// HACK: uprades farmhouse to level 2 for testing
-				//if (farmHouse.upgradeLevel == 1) {
-				//	farmHouse.setMapForUpgradeLevel(2);
-				//	farmHouse.upgradeLevel = 2;
-				//}
 				farmHouse = null;
 			}
 		}
