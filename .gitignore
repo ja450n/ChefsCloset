@@ -23,3 +23,11 @@ _ReSharper*/
 **/packages/*
 *.nuget.props
 *.nuget.targets
+
+temp/
+
+*.dll
+
+*.pdb
+
+ChefsCloset\.userprefs

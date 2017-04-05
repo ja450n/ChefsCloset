@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
@@ -19,22 +20,42 @@ namespace ChefsCloset
 			MenuEvents.MenuClosed += ResolveCookedItems;
 		}
 
-		private FarmHouse farmHouse;
-		private Vector2 kitchenRange = new Vector2(6, 0);
+		private FarmHouse _farmHouse;
+		private Vector2 _kitchenRange = new Vector2(6, 0);
 		private List<Item> _fridgeItems;
 		private List<List<Item>> _chestItems = new List<List<Item>>();
+		private bool _isCookingSkillLoaded;
+
+		private bool IsCookingMenu(IClickableMenu menu) {
+			if (_farmHouse == null || _farmHouse.upgradeLevel == 1) {
+				Monitor.Log($"farmhouse: {_farmHouse}");
+				return false;
+			}
+
+			if (menu is CraftingPage)
+			{
+				return true;
+			}
+
+			if (_isCookingSkillLoaded && menu.GetType() == Type.GetType("CookingSkill.NewCraftingPage, CookingSkill"))
+			{
+				return true;
+			}
+
+			return false;
+		}
 
 		private void ResolveCookedItems(object seneder, EventArgsClickableMenuClosed e) {
-			if (farmHouse != null && e.PriorMenu is CraftingPage && _chestItems.Any()) {
+			if (IsCookingMenu(e.PriorMenu) && _chestItems.Any()) {
 				// remove all used items from fridge and reset fridge inventory
 				_fridgeItems.RemoveAll(x => x.Stack == 0);
-				farmHouse.fridge.items = _fridgeItems;
+				_farmHouse.fridge.items = _fridgeItems;
 
 				// remove all used items from chests
-				foreach (var obj in farmHouse.objects)
+				foreach (var obj in _farmHouse.objects)
 				{
 					Chest chest = obj.Value as Chest;
-					if (chest == null || chest == farmHouse.fridge || obj.Key.X > kitchenRange.X || obj.Key.Y < kitchenRange.Y)
+					if (chest == null || chest == _farmHouse.fridge || obj.Key.X > _kitchenRange.X || obj.Key.Y < _kitchenRange.Y)
 						continue;
 
 					chest.items = _chestItems.First(x => x == chest.items);
@@ -47,21 +68,20 @@ namespace ChefsCloset
 
 		private void ExtendCookingItems(object sender, EventArgsClickableMenuChanged e)
 		{
-			// don't proceed unless we're in the farmhouse opening the crafting menu
-			if (farmHouse != null && farmHouse.upgradeLevel >= 1 && e.NewMenu is CraftingPage)
+			if (IsCookingMenu(e.NewMenu))
 			{
-				_fridgeItems = farmHouse.fridge.items;
+				_fridgeItems = _farmHouse.fridge.items;
 				var cookingItems = new List<Item>();
 				var chestKeys = new List<Vector2>();
 
 				// collect chest keys from kitchen tiles
-				foreach (var obj in farmHouse.objects) {
+				foreach (var obj in _farmHouse.objects) {
 					Chest chest = obj.Value as Chest;
-					if (chest == null || chest == farmHouse.fridge)
+					if (chest == null || chest == _farmHouse.fridge)
 						continue;
-					if (obj.Key.X > kitchenRange.X || obj.Key.Y < kitchenRange.Y)
+					if (obj.Key.X > _kitchenRange.X || obj.Key.Y < _kitchenRange.Y)
 					{
-						Monitor.Log($"Chest found out of range at {obj.Key.X},{obj.Key.Y}");
+						// Monitor.Log($"Chest found out of range at {obj.Key.X},{obj.Key.Y}");
 						continue;
 					}
 
@@ -75,11 +95,11 @@ namespace ChefsCloset
 				// consolidate cooking items
 				foreach (var chestKey in chestKeys)
 				{
-					Object chest;
-					farmHouse.objects.TryGetValue(chestKey, out chest);
+					StardewValley.Object chest;
+					_farmHouse.objects.TryGetValue(chestKey, out chest);
 
 					if (chest != null) {
-						Monitor.Log($"Adding {((Chest)chest).items.Count} items from chest at {chestKey.X},{chestKey.Y}");
+						// Monitor.Log($"Adding {((Chest)chest).items.Count} items from chest at {chestKey.X},{chestKey.Y}");
 						_chestItems.Add(((Chest)chest).items);
 						cookingItems.AddRange(((Chest)chest).items);
 					}
@@ -87,24 +107,26 @@ namespace ChefsCloset
 				cookingItems.AddRange(_fridgeItems);
 
 				// apply cooking items
-				farmHouse.fridge.items = cookingItems;
+				_farmHouse.fridge.items = cookingItems;
 			}
 		}
 
 		// keeps track of location state
 		private void UpdateLocation(object sender, EventArgsCurrentLocationChanged e)
 		{
+			_isCookingSkillLoaded = this.Helper.ModRegistry.IsLoaded("CookingSkill");
+
 			if (e.NewLocation is FarmHouse)
 			{
-				farmHouse = (FarmHouse)e.NewLocation;
-				if (farmHouse.upgradeLevel >= 2)
+				_farmHouse = (FarmHouse)e.NewLocation;
+				if (_farmHouse.upgradeLevel >= 2)
 				{
-					kitchenRange.X = 9;
-					kitchenRange.Y = 14;
+					_kitchenRange.X = 9;
+					_kitchenRange.Y = 14;
 				}
 			}
 			else {
-				farmHouse = null;
+				_farmHouse = null;
 			}
 		}
 	}
