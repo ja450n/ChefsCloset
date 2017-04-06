@@ -22,13 +22,12 @@ namespace ChefsCloset
 
 		private FarmHouse _farmHouse;
 		private Vector2 _kitchenRange = new Vector2(6, 0);
-		private List<Item> _fridgeItems;
+		private List<Item> _fridgeItems = new List<Item>();
 		private List<List<Item>> _chestItems = new List<List<Item>>();
 		private bool _isCookingSkillLoaded;
 
 		private bool IsCookingMenu(IClickableMenu menu) {
 			if (_farmHouse == null || _farmHouse.upgradeLevel == 1) {
-				Monitor.Log($"farmhouse: {_farmHouse}");
 				return false;
 			}
 
@@ -46,23 +45,30 @@ namespace ChefsCloset
 		}
 
 		private void ResolveCookedItems(object seneder, EventArgsClickableMenuClosed e) {
-			if (IsCookingMenu(e.PriorMenu) && _chestItems.Any()) {
+			if (IsCookingMenu(e.PriorMenu)) {
 				// remove all used items from fridge and reset fridge inventory
-				_fridgeItems.RemoveAll(x => x.Stack == 0);
-				_farmHouse.fridge.items = _fridgeItems;
-
-				// remove all used items from chests
-				foreach (var obj in _farmHouse.objects)
-				{
-					Chest chest = obj.Value as Chest;
-					if (chest == null || chest == _farmHouse.fridge || obj.Key.X > _kitchenRange.X || obj.Key.Y < _kitchenRange.Y)
-						continue;
-
-					chest.items = _chestItems.First(x => x == chest.items);
-					chest.items.RemoveAll(x => x.Stack == 0);
+				if (_fridgeItems.Any()) { 
+					_fridgeItems.RemoveAll(x => x.Stack == 0);
+					_farmHouse.fridge.items = _fridgeItems;
 				}
 
-				_chestItems.Clear();
+				// remove all used items from chests
+				if (_chestItems.Any()) { 
+					foreach (var obj in _farmHouse.objects)
+					{
+						Chest chest = obj.Value as Chest;
+						if (chest == null || chest == _farmHouse.fridge || obj.Key.X > _kitchenRange.X || obj.Key.Y < _kitchenRange.Y)
+							continue;
+						
+						chest.items = _chestItems.First(x => x == chest.items);
+
+						if (chest.items.Any()) { 
+							chest.items.RemoveAll(x => x.Stack == 0);
+						}
+					}
+					
+					_chestItems.Clear();
+				}
 			}
 		}
 
