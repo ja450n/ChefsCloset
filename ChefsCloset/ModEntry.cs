@@ -27,7 +27,7 @@ namespace ChefsCloset
 		private bool _isCookingSkillLoaded;
 
 		private bool IsCookingMenu(IClickableMenu menu) {
-			if (_farmHouse == null || _farmHouse.upgradeLevel == 1) {
+			if (_farmHouse == null || _farmHouse.upgradeLevel == 0) {
 				return false;
 			}
 
@@ -120,7 +120,7 @@ namespace ChefsCloset
 		// keeps track of location state
 		private void UpdateLocation(object sender, EventArgsCurrentLocationChanged e)
 		{
-			_isCookingSkillLoaded = this.Helper.ModRegistry.IsLoaded("CookingSkill");
+			_isCookingSkillLoaded = this.Helper.ModRegistry.IsLoaded("spacechase0.CookingSkill");
 
 			if (e.NewLocation is FarmHouse)
 			{
