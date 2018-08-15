@@ -4,8 +4,8 @@
    "Version": {
       "MajorVersion": 1,
       "MinorVersion": 3,
-      "PatchVersion": 0,
-      "Build": "1"
+      "PatchVersion": 1,
+      "Build": "-unofficial.1-Platonymous"
    },
    "Description": "Make more items available during cooking by placing chests in the kitchen.",
    "UniqueID": "Duder.ChefsCloset",

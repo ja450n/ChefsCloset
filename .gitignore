@@ -5,9 +5,9 @@
 *.sln.docstates
 
 # build results
-[Dd]ebug/
+# [Dd]ebug/
 [Rr]elease/
-[Bb]in/
+# [Bb]in/
 [Oo]bj/
 
 # Visual Studio cache/options
